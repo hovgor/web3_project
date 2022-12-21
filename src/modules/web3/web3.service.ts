@@ -5,6 +5,8 @@ import { WalletAddressDto } from './dto/wallet.address.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-var-requires
 const Web3 = require('web3');
 
+import * as fs from 'fs';
+
 @Injectable()
 export class Web3Service {
   // constructor(){}
