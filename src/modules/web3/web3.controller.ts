@@ -1,6 +1,16 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { AddressDto } from './dto/address.dto';
 import { WalletAddressDto } from './dto/wallet.address.dto';
 import { Web3Service } from './web3.service';
 
@@ -12,8 +22,27 @@ export class Web3Controller {
   @Post('/')
   async web3Data(@Res() res: Response, @Body() body: WalletAddressDto) {
     try {
-      const newWeb3 = this.web3Service.web3Function(body);
-      return res.send(newWeb3);
+      const newWeb3 = await this.web3Service.web3Function(body);
+      return res.status(HttpStatus.OK).json({
+        data: newWeb3,
+        error: false,
+        message: 'Transaction is done!',
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Get('/')
+  async getTransactionWhitAddress(
+    @Res() res: Response,
+    @Query() address: AddressDto,
+  ) {
+    try {
+      const getTransactionCount = await this.web3Service.getTransaction(
+        address.address,
+      );
+      return res.status(HttpStatus.OK).json(getTransactionCount);
     } catch (error) {
       throw error;
     }

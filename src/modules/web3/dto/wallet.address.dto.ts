@@ -6,4 +6,7 @@ export class WalletAddressDto {
 
   @ApiProperty()
   toAddress: string;
+
+  @ApiProperty()
+  ethBalance: string;
 }
