@@ -22,7 +22,7 @@ export class Web3Controller {
   @Post('/')
   async web3Data(@Res() res: Response, @Body() body: WalletAddressDto) {
     try {
-      const newWeb3 = await this.web3Service.web3Function(body);
+      const newWeb3 = await this.web3Service.web3Transaction(body);
       return res.status(HttpStatus.OK).json({
         data: newWeb3,
         error: false,
@@ -33,7 +33,7 @@ export class Web3Controller {
     }
   }
 
-  @Get('/')
+  @Get('/transactionCount')
   async getTransactionWhitAddress(
     @Res() res: Response,
     @Query() address: AddressDto,
@@ -43,6 +43,21 @@ export class Web3Controller {
         address.address,
       );
       return res.status(HttpStatus.OK).json(getTransactionCount);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Get('/balance')
+  async getBalanceWhitAddress(
+    @Res() res: Response,
+    @Query() address: AddressDto,
+  ) {
+    try {
+      const getBalanceCount = await this.web3Service.getBalance(
+        address.address,
+      );
+      return res.status(HttpStatus.OK).json(getBalanceCount);
     } catch (error) {
       throw error;
     }
