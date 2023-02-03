@@ -1,19 +1,104 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WalletAddressDto } from './dto/wallet.address.dto';
+import * as bip39 from 'bip39';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-var-requires
 const Web3 = require('web3');
+import ControlAbi from './smartContracts/ABI/control.abi.json';
+import { Wallet, providers, ContractFactory } from 'ethers';
+import fs from 'fs';
+import path from 'path';
+import * as ethers from 'ethers';
+import { use, POSClient } from '@maticnetwork/maticjs';
+import { Web3ClientPlugin } from '@maticnetwork/maticjs-web3';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const TX = require('@ethereumjs/tx').Transaction;
+const crypto = require('crypto');
 
+const web3 = new Web3(process.env.CRYPTO_URL);
+// const parentProvider = new providers.JsonRpcProvider(rpc.parent);
+// const childProvider = new providers.JsonRpcProvider(rpc.child);
+
+// install web3 plugin
+use(Web3ClientPlugin);
 @Injectable()
 export class Web3Service {
   // constructor(){}
   // privateKay = Buffer.from(process.env.PRIVATE_KAY, 'hex');
 
+  async createWalletFile(): Promise<string> {
+    const file = path.join(__dirname, 'polygon-wallet');
+    if (!fs.existsSync(file)) {
+      fs.mkdirSync(file);
+    }
+    return file;
+  }
+
+  async generateWallet(file: string): Promise<Wallet> {
+    const provider = new providers.InfuraProvider(
+      'polygon',
+      process.env.INFURA_URL as string,
+    );
+    const wallet = await Wallet.createRandom();
+    const keystore = wallet.encrypt('password');
+    const keystoreFileName = path.join(
+      file,
+      `UTC--${new Date().toISOString()}--${wallet.address}`,
+    );
+    fs.writeFileSync(keystoreFileName, JSON.stringify(keystore), 'utf-8');
+    return wallet;
+  }
+
+  async deploySmartContract(wallet: Wallet): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const contractJson = require('./smartContracts/ABI/control.abi.json');
+    const contractFactory = new ContractFactory(
+      contractJson.abi,
+      contractJson.bytecode,
+      wallet,
+    );
+    const contract = await contractFactory.deploy();
+    console.log('Smart contract deployed at:', contract.address);
+  }
+
+  // generate mnemonic seed phrase 12 words
+  async generateMnemonic(): Promise<string> {
+    const mnemonic: string = bip39.generateMnemonic();
+    return mnemonic;
+  }
+
+  async getCredentialByMnemonic() {
+    const seed: string = await this.generateMnemonic();
+    console.log(seed);
+
+    const wallet = ethers.Wallet.fromMnemonic(seed);
+    console.log('accaunt => ', wallet);
+
+    const address = wallet.getAddress();
+    console.log('address=> ', address);
+
+    const privateKey = wallet.privateKey;
+
+    console.log('private key=> ', privateKey);
+
+    return address;
+  }
+
+  //
+  //tag forest wealth fabric slim foil spread damage toward casino ensure essay
+  // [Nest] 1562808  - 02/03/2023, 11:52:50 AM     LOG [object Object]
+  // Promise { '0xeD324cD3585C675F8B141dB18988423C309d71d2' }
+  //            0xeD324cD3585C675F8B141dB18988423C309d71d2
+  // 0xcae4bdb4dcb76aed29d89bce96a9e6a75a0d389205ffd293bead62de7b1bcfa8
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
   async web3Transaction(data: WalletAddressDto) {
     try {
       const web3 = new Web3(process.env.CRYPTO_URL);
-      // network ID
       const networkId: number = await web3.eth.net.getId();
       console.log('network ID => ', networkId);
 
@@ -85,7 +170,8 @@ export class Web3Service {
 
   async getBalance(address: string) {
     try {
-      const web3 = new Web3(process.env.INFURA_URL);
+      const contract = new Web3.eth.Contract(ControlAbi, address);
+      const web3 = new Web3(process.env.CRYPTO_URL);
       let balance: number | string;
       await web3.eth.getBalance(address).then((item: number | string) => {
         // convert to ether
@@ -102,5 +188,50 @@ export class Web3Service {
       Logger.error('Get balance function!!! ', error);
       throw error;
     }
+  }
+  async getTransactionReceipt(address: string) {
+    try {
+      const web3 = new Web3(process.env.CRYPTO_URL);
+      let receipt: string | number;
+      await web3.eth
+        .getTransactionReceipt(address)
+        .then((item: number | string) => {
+          receipt = item;
+        });
+      console.log(11111111);
+      return receipt;
+    } catch (error) {
+      Logger.error('');
+      throw error;
+    }
+  }
+  initVector = crypto.randomBytes(16);
+  Securitykey = crypto.randomBytes(32);
+  async hashingSistemForString(text: string) {
+    const algorithm = 'aes-256-cbc';
+    const cipher = crypto.createCipheriv(
+      algorithm,
+      this.Securitykey,
+      this.initVector,
+    );
+    let encryptedData = cipher.update(text, 'utf-8', 'hex');
+    encryptedData += cipher.final('hex');
+    return encryptedData;
+  }
+
+  async decodeHashingString(text: string) {
+    const algorithm = 'aes-256-cbc';
+
+    const decipher = crypto.createDecipheriv(
+      algorithm,
+      this.Securitykey,
+      this.initVector,
+    );
+
+    let decryptedData = decipher.update(text, 'hex', 'utf-8');
+
+    decryptedData += decipher.final('utf8');
+
+    return decryptedData;
   }
 }
