@@ -1,6 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class WalletAddressDto {
+  @ApiPropertyOptional()
+  privateKey?: string;
+
   @ApiProperty()
   fromAddress: string;
 

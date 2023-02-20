@@ -79,9 +79,66 @@ export class Web3Service {
 
     console.log('private key=> ', privateKey);
 
-    return address;
+    return { address, privateKey };
   }
 
+  async createTransaction(
+    privateKey: string,
+    fromAddress: string,
+    toAddress: string,
+    price: string,
+  ) {
+    try {
+      const web3 = new Web3(process.env.CRYPTO_URL);
+
+      let gasPrice: number | string | undefined = process.env.GAS_PRICE;
+
+      if (!gasPrice) {
+        await web3.eth
+          .getGasPrice()
+          .then((gasPriceDefault: number | string) => {
+            gasPrice = gasPriceDefault;
+            console.log(
+              'Default gas price => ',
+              web3.utils.toWei(gasPriceDefault, 'ether'),
+            );
+          });
+      }
+      const transaction = await web3.eth.accounts.signTransaction(
+        {
+          from: fromAddress,
+          to: toAddress,
+          value: web3.utils.toWei(price, 'ether'),
+          gas: gasPrice,
+        },
+        privateKey,
+      );
+
+      return { transaction, gasPrice };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async giveBonusRegistration(username: string, userId: number | string) {
+    try {
+      if (!username && !userId) {
+        throw 'username or user id is not found';
+      }
+      const accauntPrivatKey = this.getCredentialByMnemonic();
+      const address = (await accauntPrivatKey).address;
+      const transaction = await this.createTransaction(
+        process.env.PRIVATE_KAY,
+        process.env.DEFAULT_ADDRESS,
+        await address,
+        process.env.DEFAULT_PRICE,
+      );
+
+      return transaction;
+    } catch (error) {
+      throw error;
+    }
+  }
   //
   //tag forest wealth fabric slim foil spread damage toward casino ensure essay
   // [Nest] 1562808  - 02/03/2023, 11:52:50 AM     LOG [object Object]
@@ -123,10 +180,9 @@ export class Web3Service {
           from: data.fromAddress,
           to: data.toAddress,
           value: web3.utils.toWei(data.ethBalance, 'ether'),
-          gas: gasPrice,
-          // web3.utils.toWei(gasPrice, 'ether'),
+          gas: web3.utils.toWei(gasPrice, 'ether'),
         },
-        process.env.PRIVATE_KAY2,
+        process.env.PRIVATE_KAY,
       );
       //
       //

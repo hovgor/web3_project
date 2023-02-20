@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { AddBonusDto } from './dto/add.bonus.dto';
 import { AddressDto } from './dto/address.dto';
 import { HashingSistemDto } from './dto/hashing.sistem.data.dto';
 import { WalletAddressDto } from './dto/wallet.address.dto';
@@ -83,6 +84,18 @@ export class Web3Controller {
   }
   //
 
+  @Post('add_bonus_with_create')
+  async addBonusWithCreate(@Res() res: Response, @Body() body: AddBonusDto) {
+    try {
+      const userBlock = await this.web3Service.giveBonusRegistration(
+        body.username,
+        body.userId,
+      );
+      return res.status(HttpStatus.OK).json(userBlock);
+    } catch (error) {
+      throw error;
+    }
+  }
   //
 
   //
