@@ -12,6 +12,8 @@ import { use, POSClient } from '@maticnetwork/maticjs';
 import { Web3ClientPlugin } from '@maticnetwork/maticjs-web3';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const crypto = require('crypto');
+const bonusAbi = import('./smart_contracts/bonus.json');
+import { ContractAddressBonus } from './constants/smart_contract_address';
 
 const web3 = new Web3(process.env.CRYPTO_URL);
 // const parentProvider = new providers.JsonRpcProvider(rpc.parent);
@@ -66,19 +68,10 @@ export class Web3Service {
   }
 
   async getCredentialByMnemonic() {
-    const seed: string = await this.generateMnemonic();
-    console.log(seed);
-
-    const wallet = ethers.Wallet.fromMnemonic(seed);
-    console.log('accaunt => ', wallet);
-
-    const address = wallet.getAddress();
-    console.log('address=> ', address);
-
+    const seed: string = ethers.Wallet.createRandom().mnemonic.phrase;
+    const wallet = ethers.Wallet.fromMnemonic(seed, "m/44'/60'/0'/0/0");
+    const address = wallet.address;
     const privateKey = wallet.privateKey;
-
-    console.log('private key=> ', privateKey);
-
     return { address, privateKey };
   }
 
@@ -158,7 +151,7 @@ export class Web3Service {
       const web3 = new Web3(process.env.CRYPTO_URL);
       const networkId: number = await web3.eth.net.getId();
       console.log('network ID => ', networkId);
-
+      const contract = new Web3.eth.Contract(bonusAbi, ContractAddressBonus);
       // default gas price
       let gasPrice: number | string = process.env.GAS_PRICE;
       if (!gasPrice) {
@@ -181,6 +174,7 @@ export class Web3Service {
           to: data.toAddress,
           value: web3.utils.toWei(data.ethBalance, 'ether'),
           gas: web3.utils.toWei(gasPrice, 'ether'),
+          gasLimit: web3.utils.toHex(21000),
         },
         process.env.PRIVATE_KAY,
       );

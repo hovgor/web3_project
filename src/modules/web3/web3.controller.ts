@@ -12,6 +12,7 @@ import { Response } from 'express';
 import { AddBonusDto } from './dto/add.bonus.dto';
 import { AddressDto } from './dto/address.dto';
 import { HashingSistemDto } from './dto/hashing.sistem.data.dto';
+import { ToFixedNumberDto } from './dto/toFixNumber.dto';
 import { WalletAddressDto } from './dto/wallet.address.dto';
 import { Web3Service } from './web3.service';
 
@@ -142,6 +143,24 @@ export class Web3Controller {
         body.codeForHashing,
       );
       return res.status(HttpStatus.ACCEPTED).json(hash);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Post('toFixNumber')
+  async toFixNumber(@Res() res: Response, @Body() body: ToFixedNumberDto) {
+    try {
+      if (!body.num) {
+        return res.status(HttpStatus.OK).json(null);
+      }
+      const splitNum = body.num.toString().split('.');
+      if (!splitNum[1]) {
+        return res.status(HttpStatus.OK).json(body.num);
+      }
+      return res
+        .status(HttpStatus.OK)
+        .json(Number(body.num.toFixed(splitNum[0].length > 1 ? 0 : 1)));
     } catch (error) {
       throw error;
     }
