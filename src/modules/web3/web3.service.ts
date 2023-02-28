@@ -218,6 +218,16 @@ export class Web3Service {
     }
   }
 
+  async getWalletAddressWithPrivateKey(privateKey: string) {
+    try {
+      const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+      const address = account.address;
+      return address;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getBalance(address: string) {
     try {
       const contract = new Web3.eth.Contract(ControlAbi, address);

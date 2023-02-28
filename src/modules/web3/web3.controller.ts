@@ -11,6 +11,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AddBonusDto } from './dto/add.bonus.dto';
 import { AddressDto } from './dto/address.dto';
+import { GetWalletAddressDto } from './dto/gettwalletaddress.dto';
 import { HashingSistemDto } from './dto/hashing.sistem.data.dto';
 import { ToFixedNumberDto } from './dto/toFixNumber.dto';
 import { WalletAddressDto } from './dto/wallet.address.dto';
@@ -148,6 +149,20 @@ export class Web3Controller {
     }
   }
 
+  @Get('get-wallet-address-with-private-key')
+  async getWalletAddressWithPrivateKey(
+    @Res() res: Response,
+    @Query() query: GetWalletAddressDto,
+  ) {
+    try {
+      const address = await this.web3Service.getWalletAddressWithPrivateKey(
+        query.privateKey,
+      );
+      return res.status(HttpStatus.OK).json(address);
+    } catch (error) {
+      throw error;
+    }
+  }
   @Post('toFixNumber')
   async toFixNumber(@Res() res: Response, @Body() body: ToFixedNumberDto) {
     try {
