@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Sample Web3</title>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  </head>
+  <style>
+    input[type="text"],
+    input[type="number"],
+    input[type="datetime-local"],
+    select {
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    /* color: rgb(3, 162, 91); */
+
+    button {
+      width: 20%;
+      height: 4%;
+      background-color: #02146f;
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #090a0a;
+      color: white;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    div {
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 10px;
+    }
+
+    .nine h1 {
+      text-align: center;
+      font-size: 50px;
+      text-transform: uppercase;
+      color: #222;
+      letter-spacing: 1px;
+      font-family: "Playfair Display", serif;
+      font-weight: 400;
+    }
+
+    .nine h1 span {
+      margin-top: 5px;
+      font-size: 15px;
+      color: #444;
+      word-spacing: 1px;
+      font-weight: normal;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: "Raleway", sans-serif;
+      font-weight: 500;
+
+      display: grid;
+      grid-template-columns: 1fr max-content 1fr;
+      grid-template-rows: 27px 0;
+      grid-gap: 20px;
+      align-items: center;
+    }
+
+    .nine h1 span:after,
+    .nine h1 span:before {
+      content: " ";
+      display: block;
+      border-bottom: 1px solid #ccc;
+      border-top: 1px solid #ccc;
+      height: 5px;
+      background-color: #f8f8f8;
+    }
+
+    .table {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .table td {
+      border: 1px solid #e4eff8;
+    }
+
+    .table input {
+      width: 100%;
+    }
+  </style>
+
+  <body>
+    <div class="nine">
+      <h1>Sample Web3</h1>
+      <button style="margin-left: 40%" onclick="load()">Connect Wallet</button
+      ><br />
+    </div>
+
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>Get Free CMN Tokens:</td>
+          <td>
+            <!-- <input style="width: auto;" type="text" id="address3" name="address3"
+						placeholder="Add Address"> -->
+            <button id="get_balance" onclick="getCMN()">Get</button>
+          </td>
+        </tr>
+        <tr>
+          <td>User CMN Balance:</td>
+          <td>
+            <input
+              style="width: auto"
+              type="text"
+              id="bal"
+              placeholder="Connect Wallet"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script>
+    const tokenABI = [
+      {
+        inputs: [],
+        name: "CtrlContract",
+        outputs: [
+          {
+            internalType: "contract CtrlInterface",
+            name: "",
+            type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [],
+        name: "ListContract",
+        outputs: [
+          {
+            internalType: "contract ListInterface",
+            name: "",
+            type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "comm_id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "symbol",
+            type: "string",
+          },
+          {
+            internalType: "address",
+            name: "issuer",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "initial_supply",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "cw",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "maximum_supply",
+            type: "uint256",
+          },
+        ],
+        name: "create",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [],
+        name: "ctrlAddress",
+        outputs: [
+          {
+            internalType: "address",
+            name: "",
+            type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "comm_id",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "_user",
+            type: "address",
+          },
+        ],
+        name: "getBalance",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [],
+        name: "getFreeCmnToken",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "comm_id",
+            type: "uint256",
+          },
+        ],
+        name: "getTotalSupply",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "comm_id",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "_user",
+            type: "address",
+          },
+        ],
+        name: "getUserWeightage",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_id",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "_status",
+            type: "bool",
+          },
+        ],
+        name: "globallock",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "comm_id",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "_to",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "_amount",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "memo",
+            type: "string",
+          },
+        ],
+        name: "issue",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [],
+        name: "listAddress",
+        outputs: [
+          {
+            internalType: "address",
+            name: "",
+            type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [],
+        name: "publicationAddress",
+        outputs: [
+          {
+            internalType: "address",
+            name: "",
+            type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_id",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "_from",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "_amount",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "memo",
+            type: "string",
+          },
+        ],
+        name: "retire",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "list",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "ctrl",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "publication",
+            type: "address",
+          },
+        ],
+        name: "setContracts",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_id",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "fee",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "transfer_fee",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "min_transfer_fee_points",
+            type: "uint256",
+          },
+        ],
+        name: "setparams",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_id",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "_from",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "_to",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "_amount",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "memo",
+            type: "string",
+          },
+        ],
+        name: "transfer",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+    ];
+
+    const tokenAddress = "0x1160c488751F8B13Dcf5A0B90A765064dA5f8320";
+
+    async function getCMN() {
+      try {
+        window.contract = await loadTokenContract();
+        var account = await getCurrentAccount();
+        var gas = await window.web3.eth.getGasPrice();
+        // var ico_ad = $('#address3').val();
+        let coolNumber = await window.contract.methods
+          .getFreeCmnToken()
+          .send({ from: account, gasPrice: gas })
+          .on("transactionHash", function (hash) {
+            console.log(hash);
+            alert(
+              "Transaction successful, wait for few seconds for automatic reload"
+            );
+          })
+          .on("receipt", function (receipt) {
+            location.reload();
+          })
+          .on("error", function (error, receipt) {
+            console.log(error);
+          });
+        return;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function loadWeb3() {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        let n = window.ethereum.chainId;
+
+        try {
+          if (n != "80001") {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: n,
+                  chainName: "Mumbai Testnet",
+                  rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
+                  blockExplorerUrls: ["https://polygonscan.com/"],
+                  nativeCurrency: {
+                    symbol: "MATIC",
+                    decimals: 18,
+                  },
+                },
+              ],
+            });
+          }
+          const accounts = await ethereum
+            .request({ method: "eth_requestAccounts" })
+            .then((resp) => {
+              alert("Connected Successfully");
+              getCMNBalance();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        alert("Please Install Metamask to continue");
+      }
+    }
+
+    async function loadTokenContract() {
+      try {
+        return await new window.web3.eth.Contract(tokenABI, tokenAddress);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function getCurrentAccount() {
+      try {
+        const accounts = await window.web3.eth.getAccounts();
+        return accounts[0];
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function getCMNBalance() {
+      try {
+        window.contract = await loadTokenContract();
+        const account = await getCurrentAccount();
+        // var to = $('#address3').val();
+        let coolNumber = await window.contract.methods
+          .getBalance(0, account)
+          .call();
+        document.getElementById("bal").value =
+          window.web3.utils.fromWei(coolNumber);
+        console.log(coolNumber);
+        return;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function load() {
+      try {
+        await loadWeb3();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  </script>
+
+  <!-- end of sixth section -->
+  <!-- jQuery library -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+
+  <!-- Popper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+</html>

@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -179,5 +180,22 @@ export class Web3Controller {
     } catch (error) {
       throw error;
     }
+  }
+
+  @Get('getCMN')
+  async getCMN(@Res() res: Response) {
+    try {
+      const getFreeTokens = await this.web3Service.getFreeTokens();
+      return res.status(HttpStatus.OK).json(getFreeTokens);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Get('getHtmlFile')
+  async getHtmlFile(@Req() req: Request, @Res() res: Response) {
+    res.sendFile(
+      '/home/gor/Desktop/projects/web3-transactions/src/modules/index.html',
+    );
   }
 }

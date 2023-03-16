@@ -4,6 +4,7 @@ import * as bip39 from 'bip39';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-var-requires
 const Web3 = require('web3');
 import ControlAbi from './smartContracts/ABI/control.abi.json';
+import * as PointAbi from './smart_contracts/point.abi.json';
 import { Wallet, providers, ContractFactory } from 'ethers';
 import fs from 'fs';
 import path from 'path';
@@ -12,8 +13,11 @@ import { use, POSClient } from '@maticnetwork/maticjs';
 import { Web3ClientPlugin } from '@maticnetwork/maticjs-web3';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const crypto = require('crypto');
-const bonusAbi = import('./smart_contracts/bonus.json');
-import { ContractAddressBonus } from './constants/smart_contract_address';
+const bonusAbi = import('./smart_contracts/bonus.abi.json');
+import {
+  ContractAddressBonus,
+  ContractAddressPoint,
+} from './constants/smart_contract_address';
 
 const web3 = new Web3(process.env.CRYPTO_URL);
 // const parentProvider = new providers.JsonRpcProvider(rpc.parent);
@@ -230,7 +234,7 @@ export class Web3Service {
 
   async getBalance(address: string) {
     try {
-      const contract = new Web3.eth.Contract(ControlAbi, address);
+      // const contract = new Web3.eth.Contract(ControlAbi, address);
       const web3 = new Web3(process.env.CRYPTO_URL);
       let balance: number | string;
       await web3.eth.getBalance(address).then((item: number | string) => {
@@ -293,5 +297,51 @@ export class Web3Service {
     decryptedData += decipher.final('utf8');
 
     return decryptedData;
+  }
+
+  async loadTokenContract() {
+    try {
+      const contract = await new web3.eth.Contract(
+        PointAbi,
+        ContractAddressPoint,
+      );
+      return contract;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async getCurrentAccount() {
+    try {
+      const account = await web3.eth.accounts.privateKeyToAccount(
+        process.env.PRIVATE_KAY,
+      );
+      return account;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async getGasPrice() {
+    const web3 = new Web3(process.env.CRYPTO_URL);
+    const gas = await web3.eth.getGasPrice();
+    return await web3.utils.toWei(gas, 'ether');
+  }
+
+  async getFreeTokens() {
+    try {
+      const contract = await this.loadTokenContract();
+      const account = await this.getCurrentAccount();
+      const gas = await this.getGasPrice();
+      const coolNumber = await contract.methods.getFreeCmnToken().send({
+        from: account.privateKey,
+        gasPrice: gas,
+      });
+      console.log(coolNumber);
+
+      return;
+    } catch (error) {
+      throw error;
+    }
   }
 }
