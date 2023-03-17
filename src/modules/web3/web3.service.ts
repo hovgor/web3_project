@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { WalletAddressDto } from './dto/wallet.address.dto';
 import * as bip39 from 'bip39';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-var-requires
-const Web3 = require('web3');
-import ControlAbi from './smartContracts/ABI/control.abi.json';
+// const Web3 = require('web3');
+// import ControlAbi from './smartContracts/ABI/control.abi.json';
 import * as PointAbi from './smart_contracts/point.abi.json';
 import { Wallet, providers, ContractFactory } from 'ethers';
 import fs from 'fs';
@@ -13,13 +13,14 @@ import { use, POSClient } from '@maticnetwork/maticjs';
 import { Web3ClientPlugin } from '@maticnetwork/maticjs-web3';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const crypto = require('crypto');
-const bonusAbi = import('./smart_contracts/bonus.abi.json');
+// const bonusAbi = import('./smart_contracts/bonus.abi.json');
 import {
   ContractAddressBonus,
   ContractAddressPoint,
 } from './constants/smart_contract_address';
-
-const web3 = new Web3(process.env.CRYPTO_URL);
+import Web3 from 'web3';
+import {} from 'web3-eth-abi';
+// const web3 = new Web3(process.env.CRYPTO_URL);
 // const parentProvider = new providers.JsonRpcProvider(rpc.parent);
 // const childProvider = new providers.JsonRpcProvider(rpc.child);
 
@@ -27,9 +28,12 @@ const web3 = new Web3(process.env.CRYPTO_URL);
 use(Web3ClientPlugin);
 @Injectable()
 export class Web3Service {
+  private web3: Web3;
   // constructor(){}
   // privateKay = Buffer.from(process.env.PRIVATE_KAY, 'hex');
-
+  constructor() {
+    this.web3 = new Web3(process.env.CRYPTO_URL);
+  }
   async createWalletFile(): Promise<string> {
     const file = path.join(__dirname, 'polygon-wallet');
     if (!fs.existsSync(file)) {
@@ -86,26 +90,22 @@ export class Web3Service {
     price: string,
   ) {
     try {
-      const web3 = new Web3(process.env.CRYPTO_URL);
+      // const web3 = new Web3(process.env.CRYPTO_URL);
 
       let gasPrice: number | string | undefined = process.env.GAS_PRICE;
 
       if (!gasPrice) {
-        await web3.eth
+        await this.web3.eth
           .getGasPrice()
           .then((gasPriceDefault: number | string) => {
             gasPrice = gasPriceDefault;
-            console.log(
-              'Default gas price => ',
-              web3.utils.toWei(gasPriceDefault, 'ether'),
-            );
           });
       }
-      const transaction = await web3.eth.accounts.signTransaction(
+      const transaction = await this.web3.eth.accounts.signTransaction(
         {
           from: fromAddress,
           to: toAddress,
-          value: web3.utils.toWei(price, 'ether'),
+          value: this.web3.utils.toWei(price, 'ether'),
           gas: gasPrice,
         },
         privateKey,
@@ -152,40 +152,36 @@ export class Web3Service {
   //
   async web3Transaction(data: WalletAddressDto) {
     try {
-      const web3 = new Web3(process.env.CRYPTO_URL);
-      const networkId: number = await web3.eth.net.getId();
+      // const web3 = new Web3(process.env.CRYPTO_URL);
+      const networkId: number = await this.web3.eth.net.getId();
       console.log('network ID => ', networkId);
-      const contract = new Web3.eth.Contract(bonusAbi, ContractAddressBonus);
+      // const contract = new Web3.eth.Contract(bonusAbi, ContractAddressBonus);
       // default gas price
       let gasPrice: number | string = process.env.GAS_PRICE;
       if (!gasPrice) {
-        await web3.eth
+        await this.web3.eth
           .getGasPrice()
           .then((gasPriceDefault: number | string) => {
             gasPrice = gasPriceDefault;
-            console.log(
-              'Default gas price => ',
-              web3.utils.toWei(gasPriceDefault, 'ether'),
-            );
           });
       }
 
       // create transaction
-      const createTransaction = await web3.eth.accounts.signTransaction(
+      const createTransaction = await this.web3.eth.accounts.signTransaction(
         {
           // chaneId: networkId,
           from: data.fromAddress,
           to: data.toAddress,
-          value: web3.utils.toWei(data.ethBalance, 'ether'),
-          gas: web3.utils.toWei(gasPrice, 'ether'),
-          gasLimit: web3.utils.toHex(21000),
+          value: this.web3.utils.toWei(data.ethBalance, 'ether'),
+          gas: this.web3.utils.toWei(gasPrice, 'ether'),
+          // gasLimit: this.web3.utils.toHex(21000),
         },
         process.env.PRIVATE_KAY,
       );
       //
       //
       // await web3.eth.accounts.privKey;
-      const createReceipt = await web3.eth.sendSignedTransaction(
+      const createReceipt = await this.web3.eth.sendSignedTransaction(
         createTransaction.rawTransaction,
       );
       Logger.verbose(
@@ -203,13 +199,15 @@ export class Web3Service {
   // get transaction
   async getTransaction(req: string) {
     try {
-      const web3 = new Web3(process.env.INFURA_URL);
+      // const web3 = new Web3(process.env.INFURA_URL);
 
       let countTransactions: string | number;
-      await web3.eth.getTransactionCount(req).then((item: number | string) => {
-        countTransactions = item;
-        item;
-      });
+      await this.web3.eth
+        .getTransactionCount(req)
+        .then((item: number | string) => {
+          countTransactions = item;
+          item;
+        });
 
       return {
         data: countTransactions,
@@ -224,7 +222,7 @@ export class Web3Service {
 
   async getWalletAddressWithPrivateKey(privateKey: string) {
     try {
-      const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+      const account = this.web3.eth.accounts.privateKeyToAccount(privateKey);
       const address = account.address;
       return address;
     } catch (error) {
@@ -235,13 +233,14 @@ export class Web3Service {
   async getBalance(address: string) {
     try {
       // const contract = new Web3.eth.Contract(ControlAbi, address);
-      const web3 = new Web3(process.env.CRYPTO_URL);
+      // const web3 = new Web3(process.env.CRYPTO_URL);
       let balance: number | string;
-      await web3.eth.getBalance(address).then((item: number | string) => {
+      await this.web3.eth.getBalance(address).then((item: number | string) => {
         // convert to ether
-        const etrBal = web3.utils.fromWei(item, 'ether');
-        balance = etrBal;
-        console.log(`${address} balance = `, balance);
+        //TODO
+        // const etrBal = this.web3.utils.fromWei(item, 'ether');
+        // balance = etrBal;
+        // console.log(`${address} balance = `, balance);
       });
       return {
         data: balance,
@@ -255,15 +254,15 @@ export class Web3Service {
   }
   async getTransactionReceipt(address: string) {
     try {
-      const web3 = new Web3(process.env.CRYPTO_URL);
-      let receipt: string | number;
-      await web3.eth
-        .getTransactionReceipt(address)
-        .then((item: number | string) => {
-          receipt = item;
-        });
-      console.log(11111111);
-      return receipt;
+      // const web3 = new Web3(process.env.CRYPTO_URL);
+      // let receipt: string | number;
+      // await web3.eth
+      //   .getTransactionReceipt(address)
+      //   .then((item: number | string) => {
+      //     receipt = item;
+      //   });
+      // console.log(11111111);
+      // return receipt;
     } catch (error) {
       Logger.error('');
       throw error;
@@ -298,11 +297,16 @@ export class Web3Service {
 
     return decryptedData;
   }
-
-  async loadTokenContract() {
+  //
+  //
+  //
+  //
+  //
+  //
+  public async loadTokenContract() {
     try {
-      const contract = await new web3.eth.Contract(
-        PointAbi,
+      const contract = new this.web3.eth.Contract(
+        PointAbi as any,
         ContractAddressPoint,
       );
       return contract;
@@ -313,7 +317,7 @@ export class Web3Service {
 
   async getCurrentAccount() {
     try {
-      const account = await web3.eth.accounts.privateKeyToAccount(
+      const account = this.web3.eth.accounts.privateKeyToAccount(
         process.env.PRIVATE_KAY,
       );
       return account;
@@ -328,20 +332,69 @@ export class Web3Service {
     return await web3.utils.toWei(gas, 'ether');
   }
 
-  async getFreeTokens() {
+  public async getFreeTokens() {
     try {
       const contract = await this.loadTokenContract();
       const account = await this.getCurrentAccount();
       const gas = await this.getGasPrice();
-      const coolNumber = await contract.methods.getFreeCmnToken().send({
-        from: account.privateKey,
+
+      const result = await contract.methods.getFreeCmnToken().send({
+        from: account.address,
         gasPrice: gas,
       });
-      console.log(coolNumber);
 
-      return;
+      return result;
     } catch (error) {
       throw error;
     }
+  }
+
+  public async connectWallet() {
+    // Get the current chain ID
+    const id: number | string = await this.getChainId();
+
+    try {
+      // Check if the current chain ID matches the expected ID
+      if (id != '0x80001') {
+        // If not, prompt the user to switch to the expected network
+        await this.web3.currentProvider.send({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: '0x80001',
+              chainName: process.env.CHAIN_NAME,
+              rpcUrls: [process.env.RPC_URL],
+              blockExplorerUrls: [process.env.BLOCK_EXPLORER_URL],
+              nativeCurrency: {
+                name: process.env.CURRENCY_NAME,
+                symbol: process.env.CURRENCY_SYMBOL,
+                decimals: process.env.CURRENCY_DECIMALS,
+              },
+            },
+          ],
+        });
+      }
+
+      // Request access to the user's wallet
+      const accounts = await this.web3.eth.request({
+        method: 'eth_requestAccounts',
+      });
+
+      console.log('Connected Successfully');
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async getChainId() {
+    const web3 = new Web3(process.env.CRYPTO_URL);
+    let id;
+    await web3.eth.net
+      .getId()
+      .then((chainId: number) => {
+        id = chainId;
+      })
+      .catch((error: string) => console.error(error));
+    return id;
   }
 }
