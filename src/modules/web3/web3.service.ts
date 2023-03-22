@@ -32,7 +32,7 @@ export class Web3Service {
   // constructor(){}
   // privateKay = Buffer.from(process.env.PRIVATE_KAY, 'hex');
   constructor() {
-    this.web3 = new Web3(process.env.CRYPTO_URL);
+    // this.web3 = new Web3(process.env.CRYPTO_URL);
   }
   async createWalletFile(): Promise<string> {
     const file = path.join(__dirname, 'polygon-wallet');
@@ -90,7 +90,7 @@ export class Web3Service {
     price: string,
   ) {
     try {
-      // const web3 = new Web3(process.env.CRYPTO_URL);
+      this.web3 = new Web3(process.env.CRYPTO_URL);
 
       let gasPrice: number | string | undefined = process.env.GAS_PRICE;
 
@@ -152,6 +152,7 @@ export class Web3Service {
   //
   async web3Transaction(data: WalletAddressDto) {
     try {
+      this.web3 = new Web3(process.env.CRYPTO_URL);
       // const web3 = new Web3(process.env.CRYPTO_URL);
       const networkId: number = await this.web3.eth.net.getId();
       console.log('network ID => ', networkId);
@@ -199,8 +200,7 @@ export class Web3Service {
   // get transaction
   async getTransaction(req: string) {
     try {
-      // const web3 = new Web3(process.env.INFURA_URL);
-
+      this.web3 = new Web3(process.env.CRYPTO_URL);
       let countTransactions: string | number;
       await this.web3.eth
         .getTransactionCount(req)
@@ -222,6 +222,7 @@ export class Web3Service {
 
   async getWalletAddressWithPrivateKey(privateKey: string) {
     try {
+      this.web3 = new Web3(process.env.CRYPTO_URL);
       const account = this.web3.eth.accounts.privateKeyToAccount(privateKey);
       const address = account.address;
       return address;
@@ -232,6 +233,7 @@ export class Web3Service {
 
   async getBalance(address: string) {
     try {
+      this.web3 = new Web3(process.env.CRYPTO_URL);
       // const contract = new Web3.eth.Contract(ControlAbi, address);
       // const web3 = new Web3(process.env.CRYPTO_URL);
       let balance: number | string;
@@ -305,6 +307,7 @@ export class Web3Service {
   //
   public async loadTokenContract() {
     try {
+      this.web3 = new Web3(process.env.CRYPTO_URL);
       const contract = new this.web3.eth.Contract(
         PointAbi as any,
         ContractAddressPoint,
@@ -317,6 +320,7 @@ export class Web3Service {
 
   async getCurrentAccount() {
     try {
+      this.web3 = new Web3(process.env.CRYPTO_URL);
       const account = this.web3.eth.accounts.privateKeyToAccount(
         process.env.PRIVATE_KAY,
       );
@@ -357,26 +361,26 @@ export class Web3Service {
       // Check if the current chain ID matches the expected ID
       if (id != '0x80001') {
         // If not, prompt the user to switch to the expected network
-        await this.web3.currentProvider.send({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: '0x80001',
-              chainName: process.env.CHAIN_NAME,
-              rpcUrls: [process.env.RPC_URL],
-              blockExplorerUrls: [process.env.BLOCK_EXPLORER_URL],
-              nativeCurrency: {
-                name: process.env.CURRENCY_NAME,
-                symbol: process.env.CURRENCY_SYMBOL,
-                decimals: process.env.CURRENCY_DECIMALS,
-              },
-            },
-          ],
-        });
+        // await this.web3.currentProvider.send({
+        // method: 'wallet_addEthereumChain',
+        //   params: [
+        //     {
+        //       chainId: '0x80001',
+        //       chainName: process.env.CHAIN_NAME,
+        //       rpcUrls: [process.env.RPC_URL],
+        //       blockExplorerUrls: [process.env.BLOCK_EXPLORER_URL],
+        //       nativeCurrency: {
+        //         name: process.env.CURRENCY_NAME,
+        //         symbol: process.env.CURRENCY_SYMBOL,
+        //         decimals: process.env.CURRENCY_DECIMALS,
+        //       },
+        //     },
+        //   ],
+        // });
       }
 
       // Request access to the user's wallet
-      const accounts = await this.web3.eth.request({
+      const accounts = await (this.web3.eth as any).request({
         method: 'eth_requestAccounts',
       });
 

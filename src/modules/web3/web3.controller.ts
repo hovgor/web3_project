@@ -198,4 +198,9 @@ export class Web3Controller {
       '/home/gor/Desktop/projects/web3-transactions/src/modules/index.html',
     );
   }
+
+  @Post('blockchainCall')
+  async callBlockchain(@Res() res: Response) {
+    res.sendStatus(HttpStatus.OK).json();
+  }
 }
