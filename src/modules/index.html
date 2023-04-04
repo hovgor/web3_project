@@ -25,9 +25,9 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   </head>
   <style>
-    input[type="text"],
-    input[type="number"],
-    input[type="datetime-local"],
+    input[type='text'],
+    input[type='number'],
+    input[type='datetime-local'],
     select {
       padding: 12px 20px;
       margin: 8px 0;
@@ -55,7 +55,7 @@
       color: white;
     }
 
-    input[type="submit"]:hover {
+    input[type='submit']:hover {
       background-color: #45a049;
     }
 
@@ -71,7 +71,7 @@
       text-transform: uppercase;
       color: #222;
       letter-spacing: 1px;
-      font-family: "Playfair Display", serif;
+      font-family: 'Playfair Display', serif;
       font-weight: 400;
     }
 
@@ -83,7 +83,7 @@
       font-weight: normal;
       letter-spacing: 2px;
       text-transform: uppercase;
-      font-family: "Raleway", sans-serif;
+      font-family: 'Raleway', sans-serif;
       font-weight: 500;
 
       display: grid;
@@ -95,7 +95,7 @@
 
     .nine h1 span:after,
     .nine h1 span:before {
-      content: " ";
+      content: ' ';
       display: block;
       border-bottom: 1px solid #ccc;
       border-top: 1px solid #ccc;
@@ -155,347 +155,347 @@
     const tokenABI = [
       {
         inputs: [],
-        name: "CtrlContract",
+        name: 'CtrlContract',
         outputs: [
           {
-            internalType: "contract CtrlInterface",
-            name: "",
-            type: "address",
+            internalType: 'contract CtrlInterface',
+            name: '',
+            type: 'address',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [],
-        name: "ListContract",
+        name: 'ListContract',
         outputs: [
           {
-            internalType: "contract ListInterface",
-            name: "",
-            type: "address",
+            internalType: 'contract ListInterface',
+            name: '',
+            type: 'address',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "comm_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'comm_id',
+            type: 'uint256',
           },
           {
-            internalType: "string",
-            name: "name",
-            type: "string",
+            internalType: 'string',
+            name: 'name',
+            type: 'string',
           },
           {
-            internalType: "string",
-            name: "symbol",
-            type: "string",
+            internalType: 'string',
+            name: 'symbol',
+            type: 'string',
           },
           {
-            internalType: "address",
-            name: "issuer",
-            type: "address",
+            internalType: 'address',
+            name: 'issuer',
+            type: 'address',
           },
           {
-            internalType: "uint256",
-            name: "initial_supply",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'initial_supply',
+            type: 'uint256',
           },
           {
-            internalType: "uint256",
-            name: "cw",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'cw',
+            type: 'uint256',
           },
           {
-            internalType: "uint256",
-            name: "maximum_supply",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'maximum_supply',
+            type: 'uint256',
           },
         ],
-        name: "create",
+        name: 'create',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [],
-        name: "ctrlAddress",
+        name: 'ctrlAddress',
         outputs: [
           {
-            internalType: "address",
-            name: "",
-            type: "address",
+            internalType: 'address',
+            name: '',
+            type: 'address',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "comm_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'comm_id',
+            type: 'uint256',
           },
           {
-            internalType: "address",
-            name: "_user",
-            type: "address",
+            internalType: 'address',
+            name: '_user',
+            type: 'address',
           },
         ],
-        name: "getBalance",
+        name: 'getBalance',
         outputs: [
           {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [],
-        name: "getFreeCmnToken",
+        name: 'getFreeCmnToken',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "comm_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'comm_id',
+            type: 'uint256',
           },
         ],
-        name: "getTotalSupply",
+        name: 'getTotalSupply',
         outputs: [
           {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "comm_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'comm_id',
+            type: 'uint256',
           },
           {
-            internalType: "address",
-            name: "_user",
-            type: "address",
+            internalType: 'address',
+            name: '_user',
+            type: 'address',
           },
         ],
-        name: "getUserWeightage",
+        name: 'getUserWeightage',
         outputs: [
           {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '_id',
+            type: 'uint256',
           },
           {
-            internalType: "bool",
-            name: "_status",
-            type: "bool",
+            internalType: 'bool',
+            name: '_status',
+            type: 'bool',
           },
         ],
-        name: "globallock",
+        name: 'globallock',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "comm_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'comm_id',
+            type: 'uint256',
           },
           {
-            internalType: "address",
-            name: "_to",
-            type: "address",
+            internalType: 'address',
+            name: '_to',
+            type: 'address',
           },
           {
-            internalType: "uint256",
-            name: "_amount",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '_amount',
+            type: 'uint256',
           },
           {
-            internalType: "string",
-            name: "memo",
-            type: "string",
+            internalType: 'string',
+            name: 'memo',
+            type: 'string',
           },
         ],
-        name: "issue",
+        name: 'issue',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [],
-        name: "listAddress",
+        name: 'listAddress',
         outputs: [
           {
-            internalType: "address",
-            name: "",
-            type: "address",
+            internalType: 'address',
+            name: '',
+            type: 'address',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [],
-        name: "publicationAddress",
+        name: 'publicationAddress',
         outputs: [
           {
-            internalType: "address",
-            name: "",
-            type: "address",
+            internalType: 'address',
+            name: '',
+            type: 'address',
           },
         ],
-        stateMutability: "view",
-        type: "function",
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '_id',
+            type: 'uint256',
           },
           {
-            internalType: "address",
-            name: "_from",
-            type: "address",
+            internalType: 'address',
+            name: '_from',
+            type: 'address',
           },
           {
-            internalType: "uint256",
-            name: "_amount",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '_amount',
+            type: 'uint256',
           },
           {
-            internalType: "string",
-            name: "memo",
-            type: "string",
+            internalType: 'string',
+            name: 'memo',
+            type: 'string',
           },
         ],
-        name: "retire",
+        name: 'retire',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "address",
-            name: "list",
-            type: "address",
+            internalType: 'address',
+            name: 'list',
+            type: 'address',
           },
           {
-            internalType: "address",
-            name: "ctrl",
-            type: "address",
+            internalType: 'address',
+            name: 'ctrl',
+            type: 'address',
           },
           {
-            internalType: "address",
-            name: "publication",
-            type: "address",
+            internalType: 'address',
+            name: 'publication',
+            type: 'address',
           },
         ],
-        name: "setContracts",
+        name: 'setContracts',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '_id',
+            type: 'uint256',
           },
           {
-            internalType: "uint256",
-            name: "fee",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'fee',
+            type: 'uint256',
           },
           {
-            internalType: "uint256",
-            name: "transfer_fee",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'transfer_fee',
+            type: 'uint256',
           },
           {
-            internalType: "uint256",
-            name: "min_transfer_fee_points",
-            type: "uint256",
+            internalType: 'uint256',
+            name: 'min_transfer_fee_points',
+            type: 'uint256',
           },
         ],
-        name: "setparams",
+        name: 'setparams',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: "uint256",
-            name: "_id",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '_id',
+            type: 'uint256',
           },
           {
-            internalType: "address",
-            name: "_from",
-            type: "address",
+            internalType: 'address',
+            name: '_from',
+            type: 'address',
           },
           {
-            internalType: "address",
-            name: "_to",
-            type: "address",
+            internalType: 'address',
+            name: '_to',
+            type: 'address',
           },
           {
-            internalType: "uint256",
-            name: "_amount",
-            type: "uint256",
+            internalType: 'uint256',
+            name: '_amount',
+            type: 'uint256',
           },
           {
-            internalType: "string",
-            name: "memo",
-            type: "string",
+            internalType: 'string',
+            name: 'memo',
+            type: 'string',
           },
         ],
-        name: "transfer",
+        name: 'transfer',
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
     ];
 
-    const tokenAddress = "0x1160c488751F8B13Dcf5A0B90A765064dA5f8320";
+    const tokenAddress = '0x1160c488751F8B13Dcf5A0B90A765064dA5f8320';
 
     async function getCMN() {
       try {
@@ -506,16 +506,16 @@
         let coolNumber = await window.contract.methods
           .getFreeCmnToken()
           .send({ from: account, gasPrice: gas })
-          .on("transactionHash", function (hash) {
+          .on('transactionHash', function (hash) {
             console.log(hash);
             alert(
-              "Transaction successful, wait for few seconds for automatic reload"
+              'Transaction successful, wait for few seconds for automatic reload',
             );
           })
-          .on("receipt", function (receipt) {
+          .on('receipt', function (receipt) {
             location.reload();
           })
-          .on("error", function (error, receipt) {
+          .on('error', function (error, receipt) {
             console.log(error);
           });
         return;
@@ -530,17 +530,17 @@
         let n = window.ethereum.chainId;
 
         try {
-          if (n != "80001") {
+          if (n != '80001') {
             await window.ethereum.request({
-              method: "wallet_addEthereumChain",
+              method: 'wallet_addEthereumChain',
               params: [
                 {
                   chainId: n,
-                  chainName: "Mumbai Testnet",
-                  rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
-                  blockExplorerUrls: ["https://polygonscan.com/"],
+                  chainName: 'Mumbai Testnet',
+                  rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+                  blockExplorerUrls: ['https://polygonscan.com/'],
                   nativeCurrency: {
-                    symbol: "MATIC",
+                    symbol: 'MATIC',
                     decimals: 18,
                   },
                 },
@@ -548,9 +548,9 @@
             });
           }
           const accounts = await ethereum
-            .request({ method: "eth_requestAccounts" })
+            .request({ method: 'eth_requestAccounts' })
             .then((resp) => {
-              alert("Connected Successfully");
+              alert('Connected Successfully');
               getCMNBalance();
             })
             .catch((err) => {
@@ -560,7 +560,7 @@
           console.log(err);
         }
       } else {
-        alert("Please Install Metamask to continue");
+        alert('Please Install Metamask to continue');
       }
     }
 
@@ -585,11 +585,12 @@
       try {
         window.contract = await loadTokenContract();
         const account = await getCurrentAccount();
+        console.log(1111, account);
         // var to = $('#address3').val();
         let coolNumber = await window.contract.methods
           .getBalance(0, account)
           .call();
-        document.getElementById("bal").value =
+        document.getElementById('bal').value =
           window.web3.utils.fromWei(coolNumber);
         console.log(coolNumber);
         return;

@@ -194,13 +194,22 @@ export class Web3Controller {
 
   @Get('getHtmlFile')
   async getHtmlFile(@Req() req: Request, @Res() res: Response) {
-    res.sendFile(
-      '/home/gor/Desktop/projects/web3-transactions/src/modules/index.html',
+    return res.sendFile(
+      '/home/gor/Desktop/web3-transactions/src/modules/index.html',
     );
   }
 
   @Post('blockchainCall')
   async callBlockchain(@Res() res: Response) {
-    res.sendStatus(HttpStatus.OK).json();
+    console.log('clhp');
+    const senderPoints = await this.web3Service.sendData();
+    return res.status(HttpStatus.OK).json({ success: true });
+  }
+
+  @Get('getBalanceForCmn')
+  async getBalanceForCmn(@Res() res: Response) {
+    const getB = await this.web3Service.getBalanceForCmn();
+
+    return res.status(HttpStatus.OK).json({ user_points: getB + ' CMN' });
   }
 }

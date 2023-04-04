@@ -13,13 +13,15 @@ import { use, POSClient } from '@maticnetwork/maticjs';
 import { Web3ClientPlugin } from '@maticnetwork/maticjs-web3';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const crypto = require('crypto');
-// const bonusAbi = import('./smart_contracts/bonus.abi.json');
 import {
   ContractAddressBonus,
   ContractAddressPoint,
 } from './constants/smart_contract_address';
-import Web3 from 'web3';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Web3 = require('web3');
 import {} from 'web3-eth-abi';
+
 // const web3 = new Web3(process.env.CRYPTO_URL);
 // const parentProvider = new providers.JsonRpcProvider(rpc.parent);
 // const childProvider = new providers.JsonRpcProvider(rpc.child);
@@ -28,7 +30,6 @@ import {} from 'web3-eth-abi';
 use(Web3ClientPlugin);
 @Injectable()
 export class Web3Service {
-  private web3: Web3;
   // constructor(){}
   // privateKay = Buffer.from(process.env.PRIVATE_KAY, 'hex');
   constructor() {
@@ -90,22 +91,22 @@ export class Web3Service {
     price: string,
   ) {
     try {
-      this.web3 = new Web3(process.env.CRYPTO_URL);
+      const web3 = new Web3(process.env.CRYPTO_URL);
 
       let gasPrice: number | string | undefined = process.env.GAS_PRICE;
 
       if (!gasPrice) {
-        await this.web3.eth
+        await web3.eth
           .getGasPrice()
           .then((gasPriceDefault: number | string) => {
             gasPrice = gasPriceDefault;
           });
       }
-      const transaction = await this.web3.eth.accounts.signTransaction(
+      const transaction = await web3.eth.accounts.signTransaction(
         {
           from: fromAddress,
           to: toAddress,
-          value: this.web3.utils.toWei(price, 'ether'),
+          value: web3.utils.toWei(price, 'ether'),
           gas: gasPrice,
         },
         privateKey,
@@ -152,15 +153,15 @@ export class Web3Service {
   //
   async web3Transaction(data: WalletAddressDto) {
     try {
-      this.web3 = new Web3(process.env.CRYPTO_URL);
+      const web3 = new Web3(process.env.CRYPTO_URL);
       // const web3 = new Web3(process.env.CRYPTO_URL);
-      const networkId: number = await this.web3.eth.net.getId();
+      const networkId: number = await web3.eth.net.getId();
       console.log('network ID => ', networkId);
       // const contract = new Web3.eth.Contract(bonusAbi, ContractAddressBonus);
       // default gas price
       let gasPrice: number | string = process.env.GAS_PRICE;
       if (!gasPrice) {
-        await this.web3.eth
+        await web3.eth
           .getGasPrice()
           .then((gasPriceDefault: number | string) => {
             gasPrice = gasPriceDefault;
@@ -168,13 +169,13 @@ export class Web3Service {
       }
 
       // create transaction
-      const createTransaction = await this.web3.eth.accounts.signTransaction(
+      const createTransaction = await web3.eth.accounts.signTransaction(
         {
           // chaneId: networkId,
           from: data.fromAddress,
           to: data.toAddress,
-          value: this.web3.utils.toWei(data.ethBalance, 'ether'),
-          gas: this.web3.utils.toWei(gasPrice, 'ether'),
+          value: web3.utils.toWei(data.ethBalance, 'ether'),
+          gas: web3.utils.toWei(gasPrice, 'ether'),
           // gasLimit: this.web3.utils.toHex(21000),
         },
         process.env.PRIVATE_KAY,
@@ -182,7 +183,7 @@ export class Web3Service {
       //
       //
       // await web3.eth.accounts.privKey;
-      const createReceipt = await this.web3.eth.sendSignedTransaction(
+      const createReceipt = await web3.eth.sendSignedTransaction(
         createTransaction.rawTransaction,
       );
       Logger.verbose(
@@ -200,14 +201,13 @@ export class Web3Service {
   // get transaction
   async getTransaction(req: string) {
     try {
-      this.web3 = new Web3(process.env.CRYPTO_URL);
+      const web3 = new Web3(process.env.CRYPTO_URL);
+
       let countTransactions: string | number;
-      await this.web3.eth
-        .getTransactionCount(req)
-        .then((item: number | string) => {
-          countTransactions = item;
-          item;
-        });
+      await web3.eth.getTransactionCount(req).then((item: number | string) => {
+        countTransactions = item;
+        item;
+      });
 
       return {
         data: countTransactions,
@@ -222,8 +222,8 @@ export class Web3Service {
 
   async getWalletAddressWithPrivateKey(privateKey: string) {
     try {
-      this.web3 = new Web3(process.env.CRYPTO_URL);
-      const account = this.web3.eth.accounts.privateKeyToAccount(privateKey);
+      const web3 = new Web3(process.env.CRYPTO_URL);
+      const account = web3.eth.accounts.privateKeyToAccount(privateKey);
       const address = account.address;
       return address;
     } catch (error) {
@@ -233,11 +233,11 @@ export class Web3Service {
 
   async getBalance(address: string) {
     try {
-      this.web3 = new Web3(process.env.CRYPTO_URL);
+      const web3 = new Web3(process.env.CRYPTO_URL);
       // const contract = new Web3.eth.Contract(ControlAbi, address);
       // const web3 = new Web3(process.env.CRYPTO_URL);
       let balance: number | string;
-      await this.web3.eth.getBalance(address).then((item: number | string) => {
+      await web3.eth.getBalance(address).then((item: number | string) => {
         // convert to ether
         //TODO
         // const etrBal = this.web3.utils.fromWei(item, 'ether');
@@ -302,13 +302,76 @@ export class Web3Service {
   //
   //
   //
+
+  async sendData() {
+    try {
+      console.log(process.env.CRYPTO_URL);
+      const web3 = new Web3(process.env.CRYPTO_URL);
+
+      const contract = new web3.eth.Contract(
+        PointAbi as any,
+        ContractAddressPoint,
+      );
+      const _fromAddress = process.env.DEFAULT_ADDRESS;
+      const _fromKey = process.env.PRIVATE_KAY;
+
+      console.log('Initiating Transaction ');
+
+      const transactionABI = contract.methods.getFreeCmnToken().encodeABI();
+      console.log(1);
+      const estimate_gas = await web3.eth.estimateGas({
+        from: _fromAddress,
+        to: ContractAddressPoint,
+        data: transactionABI,
+      });
+      console.log(2);
+      const transactionParameters = {
+        to: ContractAddressPoint,
+        from: _fromAddress,
+        data: transactionABI,
+        chainId: 80001,
+        gas: estimate_gas,
+      };
+      console.log(3);
+      const signTransaction = await web3.eth.accounts.signTransaction(
+        transactionParameters,
+        _fromKey,
+      );
+      const sentTx = await web3.eth.sendSignedTransaction(
+        signTransaction.rawTransaction,
+      );
+      console.log('transaction hash: ', sentTx);
+      // return sentTx.status;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  public async getBalanceForCmn() {
+    const web3 = new Web3(process.env.CRYPTO_URL);
+
+    const contract = new web3.eth.Contract(
+      PointAbi as any,
+      ContractAddressPoint,
+    );
+    const user = await this.getCurrentAccount();
+
+    const getB = await contract.methods.getBalance(0, user.address).call();
+    const cmnPrice = web3.utils.fromWei(getB);
+
+    return cmnPrice;
+  }
+  //
+  //
+  //
   //
   //
   //
   public async loadTokenContract() {
     try {
-      this.web3 = new Web3(process.env.CRYPTO_URL);
-      const contract = new this.web3.eth.Contract(
+      const web3 = new Web3(process.env.CRYPTO_URL);
+      const contract = new web3.eth.Contract(
         PointAbi as any,
         ContractAddressPoint,
       );
@@ -320,8 +383,8 @@ export class Web3Service {
 
   async getCurrentAccount() {
     try {
-      this.web3 = new Web3(process.env.CRYPTO_URL);
-      const account = this.web3.eth.accounts.privateKeyToAccount(
+      const web3 = new Web3(process.env.CRYPTO_URL);
+      const account = web3.eth.accounts.privateKeyToAccount(
         process.env.PRIVATE_KAY,
       );
       return account;
@@ -358,6 +421,7 @@ export class Web3Service {
     const id: number | string = await this.getChainId();
 
     try {
+      const web3 = new Web3(process.env.CRYPTO_URL);
       // Check if the current chain ID matches the expected ID
       if (id != '0x80001') {
         // If not, prompt the user to switch to the expected network
@@ -380,7 +444,7 @@ export class Web3Service {
       }
 
       // Request access to the user's wallet
-      const accounts = await (this.web3.eth as any).request({
+      const accounts = await (web3.eth as any).request({
         method: 'eth_requestAccounts',
       });
 
